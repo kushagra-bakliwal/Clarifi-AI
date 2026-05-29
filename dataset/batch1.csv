@@ -1,0 +1,51 @@
+review_id,date,product_name,review_text,star_rating
+1,01-05-2026,ProPlan App,"Wow, I just love it when the app deletes my unsaved work. Best feature ever!",5
+2,01-05-2026,ProPlan App,"UI is gorgeous, slick animations. But it drains my battery from 100 to 0 in twenty minutes. Fix this.",3
+3,02-05-2026,DataSync Tool,,1
+4,02-05-2026,DataSync Tool,I have to use a third-party converter just to export to PDF. Why isn't this native?,2
+5,03-05-2026,CloudStorage X,Great.,5
+6,03-05-2026,CloudStorage X,<p>The new update is <b>terrible</b>.</p> Cannot connect to the server at all. Error 404.,1
+7,04-05-2026,ProPlan App,My subscription auto-renewed even though I cancelled it 3 weeks ago! Customer support is completely ignoring my emails. I am calling my bank.,1
+8,04-05-2026,DataSync Tool,Honestly it's okay. It does the job. Nothing special but not broken either. Meh.,3
+9,05-05-2026,CloudStorage X,The shipping was fast but the software activation key in the box was already scratched off?,2
+10,05-05-2026,ProPlan App,It’s aight.,4
+11,06-05-2026,ProPlan App,"Terrible, awful, worst app ever. I hate it. (Just kidding, it's actually my favorite tool of the year!)",5
+12,06-05-2026,DataSync Tool,every time i click the export button the screen goes black and my phone restarts. reproducible every single time.,1
+13,07-05-2026,CloudStorage X,I wish there was a dark mode. My eyes are bleeding at 2 AM.,3
+14,07-05-2026,CloudStorage X,Pricing is a massive joke. $50 a month for features Competitor Y gives for free? No thanks.,1
+15,08-05-2026,ProPlan App,"Absolutely fantastic customer service, they resolved my billing issue in 5 minutes. The app itself is kind of buggy though.",4
+16,08-05-2026,DataSync Tool,APP CRASHES!!!! FIX IT!!!!!,1
+17,09-05-2026,DataSync Tool,I literally cannot do my job because of the server outage. I am losing money by the hour.,1
+18,09-05-2026,CloudStorage X,"I expected more from this brand. The integration with Slack is clunky. Sometimes messages sync, sometimes they don't.",2
+19,10-05-2026,ProPlan App,Good.,4
+20,10-05-2026,ProPlan App,     ,1
+21,11-05-2026,DataSync Tool,¿Por qué no hay soporte en español? La aplicación es buena pero no entiendo nada.,3
+22,11-05-2026,CloudStorage X,Perfect. No notes.,5
+23,12-05-2026,CloudStorage X,I’ve been using this for 4 years. The V2.0 update ruined the workflow. It takes 5 clicks to do what used to take 1. Reverting to the old version.,2
+24,12-05-2026,ProPlan App,Too expensive.,2
+25,13-05-2026,DataSync Tool,"When I try to upload a file larger than 2GB, it just hangs at 99%. No error message, nothing.",2
+26,13-05-2026,DataSync Tool,I love the new dashboard layout! It makes finding my metrics so much easier.,5
+27,14-05-2026,CloudStorage X,This app literally set my laptop on fire. It overheated my CPU to 100 degrees.,1
+28,14-05-2026,ProPlan App,Null,1
+29,15-05-2026,ProPlan App,NaN,1
+30,15-05-2026,DataSync Tool,The dashboard is okay but it would be amazing if we could drag and drop widgets to customize the view.,4
+31,16-05-2026,CloudStorage X,Customer service representative Sarah was incredibly rude to me on the phone. She hung up on me when I asked for a refund.,1
+32,16-05-2026,ProPlan App,10/10 would buy again.,5
+33,17-05-2026,DataSync Tool,"I don't know what everyone else is complaining about, works perfectly on my M3 Mac.",5
+34,17-05-2026,CloudStorage X,It's okay I guess.,3
+35,18-05-2026,ProPlan App,"Please add a feature to export to CSV, Excel is not enough for our data team.",3
+36,18-05-2026,ProPlan App,The text is too small to read on mobile. Needs better accessibility options for visually impaired users.,2
+37,19-05-2026,DataSync Tool,If you don't fix the login bug by tomorrow I am canceling my enterprise contract with 500 seats.,1
+38,19-05-2026,CloudStorage X,"Amazing app, completely changed my life. I can't imagine working without it.",5
+39,20-05-2026,ProPlan App,Idk.,3
+40,20-05-2026,DataSync Tool,Performance is incredibly laggy since the last patch. Typing text takes a full second to register on screen.,2
+41,21-05-2026,CloudStorage X,I accidentally deleted my main project. Is there a way to recover it? Please help!,3
+42,21-05-2026,ProPlan App,⭐⭐⭐⭐⭐,5
+43,22-05-2026,DataSync Tool,The package was supposed to arrive Tuesday but I got it on Friday. Box was dented.,2
+44,22-05-2026,CloudStorage X,Super intuitive.,5
+45,23-05-2026,ProPlan App,"I am writing this review to express my profound disappointment. The software fails to execute even the most basic of tasks, rendering it functionally useless for my engineering team's requirements. We will be migrating to a different solution immediately.",1
+46,23-05-2026,DataSync Tool,I love paying $100 a year to be a beta tester for broken software.,1
+47,24-05-2026,CloudStorage X,Where do I change my password?,3
+48,24-05-2026,ProPlan App,"Works on WiFi, but crashes immediately on 5G cellular data.",2
+49,25-05-2026,DataSync Tool,I hate this company but this specific product is actually brilliant.,4
+50,25-05-2026,CloudStorage X,A+,5
