@@ -9,6 +9,7 @@ DELETE /reviews           → clears all data for the project
 from __future__ import annotations
 import csv
 import io
+import logging
 from datetime import date
 from typing import Annotated
 
@@ -18,6 +19,9 @@ from auth import get_current_user
 from services import db_service as db
 from services import ai_service as ai
 from services import kpi_service as kpis
+from services.rate_limiter import check_rate_limit, log_usage
+
+logger = logging.getLogger("clarifi.reviews")
 
 router = APIRouter()
 
@@ -44,6 +48,10 @@ async def upload_csv(
     rows = _parse_csv(text)
     if not rows:
         raise HTTPException(status_code=400, detail="No data rows found in CSV")
+
+    # Rate limit check — count valid review rows first
+    review_count = sum(1 for row in rows if _pick(row, ["review text", "reviewtext", "review", "text", "comment", "feedback", "body", "message"]))
+    check_rate_limit(str(user.id), "upload_csv", review_count)
 
     # Get or create the user's project
     project = db.get_or_create_project(user.id, getattr(user, "email", None))
@@ -85,6 +93,9 @@ async def upload_csv(
     # Save all rows as 'pending' — frontend Realtime will show them immediately
     saved = db.save_reviews(reviews_to_insert)
 
+    # Log usage for rate limiting
+    log_usage(str(user.id), "upload_csv", len(saved))
+
     # Start background analysis — FastAPI's BackgroundTasks is proper and won't be GC'd (fixes Bug #6)
     background_tasks.add_task(_run_analysis, project["id"], saved)
 
@@ -118,7 +129,7 @@ async def _run_analysis(project_id: str, saved_reviews: list[dict]) -> None:
             try:
                 db.update_review(r["id"], {"status": "processing"})
             except Exception as e:
-                print(f"[Worker] Could not mark review {r['id']} as processing: {e}")
+                logger.warning("Could not mark review %s as processing: %s", r['id'], e)
 
         # Run AI
         try:
@@ -126,7 +137,7 @@ async def _run_analysis(project_id: str, saved_reviews: list[dict]) -> None:
                 {"text": r["text"], "rating": r.get("rating")} for r in batch
             ])
         except Exception as e:
-            print(f"[Worker] AI analysis failed for batch {i}: {e}")
+            logger.error("AI analysis failed for batch %d: %s", i, e)
             for r in batch:
                 db.update_review(r["id"], {"status": "failed"})
             continue
@@ -156,19 +167,19 @@ async def _run_analysis(project_id: str, saved_reviews: list[dict]) -> None:
                         for kw in keywords if kw
                     ])
             except Exception as e:
-                print(f"[Worker] Failed to save analysis for review {review['id']}: {e}")
+                logger.error("Failed to save analysis for review %s: %s", review['id'], e)
                 db.update_review(review["id"], {"status": "failed"})
 
         batch_num = i // BATCH_SIZE + 1
         total_batches = (len(saved_reviews) + BATCH_SIZE - 1) // BATCH_SIZE
-        print(f"[Worker] Completed batch {batch_num}/{total_batches}")
+        logger.info("Completed batch %d/%d", batch_num, total_batches)
 
     # Full KPI recalculation — fixes Bug #5
     try:
         kpis.recalculate_and_save_kpis(project_id)
-        print(f"[Worker] KPI recalculation complete for project {project_id}")
+        logger.info("KPI recalculation complete for project %s", project_id)
     except Exception as e:
-        print(f"[Worker] KPI recalculation failed: {e}")
+        logger.error("KPI recalculation failed: %s", e)
 
 
 # ─── Get Reviews ──────────────────────────────────────────────────────────────

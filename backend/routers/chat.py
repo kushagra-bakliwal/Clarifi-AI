@@ -5,6 +5,7 @@ POST /chat   → { query: string } → { response: string }
 """
 
 from __future__ import annotations
+import logging
 from typing import Annotated
 from fastapi import APIRouter, Depends
 from pydantic import BaseModel
@@ -12,6 +13,9 @@ from pydantic import BaseModel
 from auth import get_current_user
 from services import db_service as db
 from services import ai_service as ai
+from services.rate_limiter import check_rate_limit, log_usage
+
+logger = logging.getLogger("clarifi.chat")
 
 router = APIRouter()
 UserDep = Annotated[object, Depends(get_current_user)]
@@ -23,6 +27,9 @@ class ChatRequest(BaseModel):
 
 @router.post("")
 async def chat(body: ChatRequest, user: UserDep):
+    # Rate limit check
+    check_rate_limit(str(user.id), "chat_query")
+
     project = db.get_project_by_user_id(user.id)
     if not project:
         return {"success": True, "data": {"response": "No data uploaded yet. Please upload a CSV to get started."}}
@@ -67,8 +74,10 @@ Answer concisely based on the review data above. If the question cannot be answe
     try:
         # Call the new OpenRouter client helper from the AI service
         answer = await ai.call_openrouter(prompt, response_format_json=False)
+        # Log usage after successful response
+        log_usage(str(user.id), "chat_query")
     except Exception as e:
-        print(f"[Chat] OpenRouter failed ({e}), using rule-based fallback.")
+        logger.warning("OpenRouter failed (%s), using rule-based fallback.", e)
         # Fallback: rule-based response
         answer = _rule_based_chat(body.query, total, positive, negative, critical, features, avg_rat)
 

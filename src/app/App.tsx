@@ -16,6 +16,8 @@ import { LoginPage } from '@/app/pages/LoginPage';
 import { OnboardingPage } from '@/app/pages/OnboardingPage';
 import { ThemeProvider } from '@/app/contexts/ThemeContext';
 import { fetchProfile, updateProfile } from '@/app/services/dataService';
+import { SentryErrorBoundary, setSentryUser } from '@/app/services/sentry';
+import { identifyUser as identifyPostHogUser } from '@/app/services/posthog';
 
 type AuthState = 'loading' | 'unauthenticated' | 'onboarding' | 'authenticated';
 
@@ -67,8 +69,15 @@ export default function App() {
     if (!user) {
       console.log('[useEffect user] No user found, setting authState to unauthenticated');
       setAuthState('unauthenticated');
+      // Clear user identity from monitoring tools
+      setSentryUser(null);
+      identifyPostHogUser(null);
       return;
     }
+
+    // Identify user in monitoring tools
+    setSentryUser({ id: user.id, email: user.email });
+    identifyPostHogUser({ id: user.id, email: user.email });
 
     console.log('[useEffect user] Fetching profile for user:', user.id);
     fetchProfile(user.id).then(profile => {
@@ -147,18 +156,40 @@ export default function App() {
   };
 
   return (
-    <ThemeProvider>
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors">
-        <Sidebar currentPage={currentPage} onNavigate={setCurrentPage} />
-        <Header onNavigate={setCurrentPage} onSignOut={handleSignOut} />
+    <SentryErrorBoundary
+      fallback={({ error }) => (
+        <div className="min-h-screen flex items-center justify-center bg-gray-900 text-white">
+          <div className="text-center max-w-md p-8">
+            <h1 className="text-2xl font-bold mb-4">Something went wrong</h1>
+            <p className="text-gray-400 mb-6">
+              An unexpected error occurred. Our team has been notified.
+            </p>
+            <pre className="text-xs text-red-400 bg-gray-800 p-4 rounded-lg mb-6 overflow-auto max-h-32">
+              {error?.toString()}
+            </pre>
+            <button
+              onClick={() => window.location.reload()}
+              className="px-6 py-2 bg-indigo-600 hover:bg-indigo-700 rounded-lg font-medium transition-colors"
+            >
+              Reload Page
+            </button>
+          </div>
+        </div>
+      )}
+    >
+      <ThemeProvider>
+        <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors">
+          <Sidebar currentPage={currentPage} onNavigate={setCurrentPage} />
+          <Header onNavigate={setCurrentPage} onSignOut={handleSignOut} />
 
-        <main className="lg:ml-64 md:ml-20 sm:ml-20 ml-0 mt-16 p-4 sm:p-6 lg:p-8">
-          {renderPage()}
-        </main>
+          <main className="lg:ml-64 md:ml-20 sm:ml-20 ml-0 mt-16 p-4 sm:p-6 lg:p-8">
+            {renderPage()}
+          </main>
 
-        <FloatingChatButton />
-        <HelpGuide />
-      </div>
-    </ThemeProvider>
+          <FloatingChatButton />
+          <HelpGuide />
+        </div>
+      </ThemeProvider>
+    </SentryErrorBoundary>
   );
 }

@@ -1,10 +1,12 @@
 import { supabase } from './supabaseClient';
+import { addBreadcrumb, captureError } from './sentry';
+import { trackEvent } from './posthog';
 
 // ─── API Base URL ─────────────────────────────────────────────────────────────
 // Bug Fix #3: Changed from Supabase Edge Function URL to local FastAPI server.
 // Bug Fix #10: getHeaders() now uses getSession() for the JWT token only
 // (token validation happens server-side via live getUser()).
-const API_BASE_URL = 'http://localhost:8000';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
 
 async function getHeaders(): Promise<Record<string, string>> {
   const { data: { session } } = await supabase.auth.getSession();
@@ -111,6 +113,7 @@ export interface UploadHistoryItem {
 // ─── Generic Fetch Helper ─────────────────────────────────────────────────────
 
 async function apiFetch<T>(path: string, options?: RequestInit): Promise<T | null> {
+  addBreadcrumb('api', `${options?.method || 'GET'} ${path}`);
   try {
     const headers = await getHeaders();
     const mergedHeaders = {
@@ -124,12 +127,14 @@ async function apiFetch<T>(path: string, options?: RequestInit): Promise<T | nul
     if (!response.ok) {
       const err = await response.json().catch(() => ({}));
       console.error(`API error at ${path} [${response.status}]:`, err);
+      captureError(new Error(`API ${response.status} at ${path}`), { path, status: response.status, err });
       return null;
     }
     const result = await response.json();
     return result.data ?? null;
   } catch (error) {
     console.error(`Fetch error at ${path}:`, error);
+    captureError(error, { path });
     return null;
   }
 }
@@ -157,6 +162,7 @@ export async function fetchUploadHistory(): Promise<UploadHistoryItem[]> {
 }
 
 export async function chatWithData(query: string): Promise<string> {
+  addBreadcrumb('chat', 'User sent chat query', { queryLength: query.length });
   try {
     const headers = await getHeaders();
     const response = await fetch(`${API_BASE_URL}/chat`, {
@@ -166,23 +172,30 @@ export async function chatWithData(query: string): Promise<string> {
     });
     if (!response.ok) throw new Error('Chat request failed');
     const result = await response.json();
+    trackEvent('chat_query_sent', { queryLength: query.length });
     return result.data?.response || 'Sorry, I could not process your query.';
   } catch (error) {
     console.error('Error in chat:', error);
+    captureError(error, { action: 'chatWithData', queryLength: query.length });
     return 'Sorry, there was an error processing your request.';
   }
 }
 
 export async function deleteAllData(): Promise<boolean> {
+  addBreadcrumb('data', 'User initiated data deletion');
   try {
     const headers = await getHeaders();
     const response = await fetch(`${API_BASE_URL}/reviews`, {
       method: 'DELETE',
       headers,
     });
+    if (response.ok) {
+      trackEvent('data_deleted');
+    }
     return response.ok;
   } catch (error) {
     console.error('Error deleting data:', error);
+    captureError(error, { action: 'deleteAllData' });
     return false;
   }
 }

@@ -6,7 +6,7 @@ import {
 import { Button } from '@/app/components/ui/button';
 import { supabase } from '@/app/services/supabaseClient';
 
-const API_BASE_URL = 'http://localhost:8000';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
