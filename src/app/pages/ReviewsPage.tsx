@@ -437,7 +437,7 @@ export function ReviewsPage() {
       <UploadReviewsModal
         isOpen={isUploadOpen}
         onClose={() => setIsUploadOpen(false)}
-        onUploadSuccess={loadReviews}
+        onUploadSuccess={handleUploadSuccess}
       />
     </div>
   );

@@ -235,7 +235,7 @@ export function FeatureRequestsPage() {
         )}
       </div>
 
-      <UploadReviewsModal isOpen={isUploadOpen} onClose={() => setIsUploadOpen(false)} onUploadSuccess={loadData} />
+      <UploadReviewsModal isOpen={isUploadOpen} onClose={() => setIsUploadOpen(false)} onUploadSuccess={handleUploadSuccess} />
     </div>
   );
 }

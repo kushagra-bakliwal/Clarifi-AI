@@ -248,7 +248,7 @@ export function AIRecommendationsPage() {
         />
       )}
 
-      <UploadReviewsModal isOpen={isUploadOpen} onClose={() => setIsUploadOpen(false)} onUploadSuccess={loadData} />
+      <UploadReviewsModal isOpen={isUploadOpen} onClose={() => setIsUploadOpen(false)} onUploadSuccess={handleUploadSuccess} />
     </div>
   );
 }
