@@ -23,8 +23,13 @@ export function initSentry(): void {
         blockAllMedia: false,
       }),
     ],
-    // Performance: capture 20% of transactions in production
+    // Performance & Distributed Tracing
     tracesSampleRate: import.meta.env.PROD ? 0.2 : 1.0,
+    tracePropagationTargets: [
+      "localhost",
+      /^https:\/\/clarifi-ai-backend\.onrender\.com/,
+      import.meta.env.VITE_API_BASE_URL || "",
+    ].filter(Boolean),
     // Session Replay: capture 10% of sessions, 100% of sessions with errors
     replaysSessionSampleRate: 0.1,
     replaysOnErrorSampleRate: 1.0,

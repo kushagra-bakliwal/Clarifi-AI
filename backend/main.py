@@ -26,6 +26,20 @@ backend_dir = os.path.dirname(os.path.abspath(__file__))
 dotenv_path = os.path.join(backend_dir, ".env")
 load_dotenv(dotenv_path)
 
+# ─── Sentry Error Tracking ───────────────────────────────────────────────────
+sentry_dsn = os.getenv("SENTRY_DSN")
+if sentry_dsn:
+    try:
+        import sentry_sdk
+        sentry_sdk.init(
+            dsn=sentry_dsn,
+            traces_sample_rate=1.0,
+            environment=os.getenv("ENVIRONMENT", "production"),
+        )
+        logger.info("Sentry SDK initialized successfully.")
+    except ImportError:
+        logger.warning("sentry-sdk package not installed; Sentry reporting disabled.")
+
 
 app = FastAPI(
     title="Clarifi AI API",
