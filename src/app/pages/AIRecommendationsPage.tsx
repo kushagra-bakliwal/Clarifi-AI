@@ -1,10 +1,12 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { AlertCircle, TrendingUp, Zap, Shield, Clock, Upload } from 'lucide-react';
 import { Badge } from '@/app/components/ui/badge';
 import { Button } from '@/app/components/ui/button';
 import { TakeActionModal } from '@/app/components/TakeActionModal';
 import { fetchRecommendations, type Recommendation } from '@/app/services/dataService';
 import { UploadReviewsModal } from '@/app/components/UploadReviewsModal';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { CardListSkeleton } from '@/app/components/skeletons/CardListSkeleton';
 
 function getImpactColor(impact: string) {
   switch (impact) {
@@ -43,20 +45,19 @@ function RecIcon({ icon, impact }: { icon: string; impact: string }) {
 }
 
 export function AIRecommendationsPage() {
-  const [recommendations, setRecommendations] = useState<Recommendation[]>([]);
-  const [loading, setLoading] = useState(true);
+  const queryClient = useQueryClient();
   const [selectedRec, setSelectedRec] = useState<Recommendation | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isUploadOpen, setIsUploadOpen] = useState(false);
 
-  const loadData = async () => {
-    setLoading(true);
-    const data = await fetchRecommendations();
-    setRecommendations(data);
-    setLoading(false);
-  };
+  const { data: recommendations = [], isLoading, isError, refetch } = useQuery<Recommendation[]>({
+    queryKey: ['recommendations'],
+    queryFn: fetchRecommendations,
+  });
 
-  useEffect(() => { loadData(); }, []);
+  const handleUploadSuccess = () => {
+    queryClient.invalidateQueries();
+  };
 
   const openModal = (rec: Recommendation) => {
     setSelectedRec(rec);
@@ -67,11 +68,31 @@ export function AIRecommendationsPage() {
   const mediumImpact = recommendations.filter(r => r.impact === 'medium').length;
   const lowImpact    = recommendations.filter(r => r.impact === 'low').length;
 
-  if (loading) {
+  if (isLoading) {
     return (
-      <div className="flex items-center justify-center py-24">
-        <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-indigo-600 mr-3" />
-        <p className="text-gray-600 dark:text-gray-400">Loading recommendations...</p>
+      <div className="space-y-6">
+        <div>
+          <h1 className="text-2xl font-semibold text-gray-900 dark:text-white">AI Recommendations</h1>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Actionable insights powered by AI analysis</p>
+        </div>
+        <CardListSkeleton />
+      </div>
+    );
+  }
+
+  if (isError) {
+    return (
+      <div className="flex flex-col items-center justify-center py-24 space-y-4">
+        <div className="w-16 h-16 bg-red-50 dark:bg-red-900/30 rounded-2xl flex items-center justify-center">
+          <AlertCircle className="w-8 h-8 text-red-500" />
+        </div>
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Failed to load recommendations</h3>
+        <p className="text-sm text-gray-500 dark:text-gray-400 text-center max-w-sm">
+          We encountered an error loading your AI recommendations list. Please verify your connection or try again.
+        </p>
+        <Button onClick={() => refetch()} className="bg-indigo-600 hover:bg-indigo-700">
+          Retry Fetch
+        </Button>
       </div>
     );
   }
@@ -95,7 +116,7 @@ export function AIRecommendationsPage() {
             Upload Reviews CSV
           </Button>
         </div>
-        <UploadReviewsModal isOpen={isUploadOpen} onClose={() => setIsUploadOpen(false)} onUploadSuccess={loadData} />
+        <UploadReviewsModal isOpen={isUploadOpen} onClose={() => setIsUploadOpen(false)} onUploadSuccess={handleUploadSuccess} />
       </div>
     );
   }

@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Upload, Sparkles } from 'lucide-react';
 import { Button } from '@/app/components/ui/button';
 import { UploadReviewsModal } from '@/app/components/UploadReviewsModal';
-import clarifiLogo from 'figma:asset/f04d43a48a1d50b46f6f1bbbb319070b7bb5678b.png';
+import clarifiLogo from 'figma:asset/f04d43a48a1d50b46f6f1bbbb319070b7bb5678b.webp';
 
 interface OnboardingPageProps {
   onComplete: () => void;

@@ -1,17 +1,18 @@
 import { useState, useEffect } from 'react';
-import { ChevronDown, ChevronRight, CheckCircle, Flag, Upload } from 'lucide-react';
+import { ChevronDown, ChevronRight, CheckCircle, Flag, Upload, AlertCircle } from 'lucide-react';
 import { Badge } from '@/app/components/ui/badge';
 import { Button } from '@/app/components/ui/button';
 import { Fragment } from 'react';
 import { fetchReviews, type Review } from '@/app/services/dataService';
 import { UploadReviewsModal } from '@/app/components/UploadReviewsModal';
 import { supabase } from '@/app/services/supabaseClient';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { TableSkeleton } from '@/app/components/skeletons/TableSkeleton';
 
 const ITEMS_PER_PAGE = 15;
 
 export function ReviewsPage() {
-  const [reviews, setReviews] = useState<Review[]>([]);
-  const [loading, setLoading] = useState(true);
+  const queryClient = useQueryClient();
   const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
   const [selectedSentiment, setSelectedSentiment] = useState<string>('all');
   const [selectedPriority, setSelectedPriority] = useState<string>('all');
@@ -20,16 +21,16 @@ export function ReviewsPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [isUploadOpen, setIsUploadOpen] = useState(false);
 
-  const loadReviews = async () => {
-    setLoading(true);
-    const data = await fetchReviews();
-    setReviews(data);
-    setLoading(false);
+  const { data: reviews = [], isLoading, isError, refetch } = useQuery<Review[]>({
+    queryKey: ['reviews'],
+    queryFn: fetchReviews,
+  });
+
+  const handleUploadSuccess = () => {
+    queryClient.invalidateQueries();
   };
 
   useEffect(() => {
-    loadReviews();
-
     // Set up Realtime subscription
     const channel = supabase
       .channel('reviews-changes')
@@ -39,24 +40,31 @@ export function ReviewsPage() {
         (payload) => {
           if (payload.eventType === 'INSERT') {
             // New row from DB — keywords array is empty until keywords table is updated
-            setReviews(prev => [{ ...(payload.new as Review), keywords: [] }, ...prev]);
+            queryClient.setQueryData<Review[]>(['reviews'], (old = []) => [
+              { ...(payload.new as Review), keywords: [] },
+              ...old,
+            ]);
           } else if (payload.eventType === 'UPDATE') {
             // Bug Fix #9: Realtime UPDATE payload does NOT include the joined keywords relation.
             // Preserve the existing keywords from the local state to prevent them disappearing.
-            setReviews(prev => prev.map(r => {
-              if (r.id !== payload.new.id) return r;
-              const updatedRow = payload.new as Review;
-              return {
-                ...r,
-                ...updatedRow,
-                // Keep existing keywords unless the update explicitly provides them
-                keywords: (updatedRow.keywords && updatedRow.keywords.length > 0)
-                  ? updatedRow.keywords
-                  : r.keywords,
-              };
-            }));
+            queryClient.setQueryData<Review[]>(['reviews'], (old = []) =>
+              old.map(r => {
+                if (r.id !== payload.new.id) return r;
+                const updatedRow = payload.new as Review;
+                return {
+                  ...r,
+                  ...updatedRow,
+                  // Keep existing keywords unless the update explicitly provides them
+                  keywords: (updatedRow.keywords && updatedRow.keywords.length > 0)
+                    ? updatedRow.keywords
+                    : r.keywords,
+                };
+              })
+            );
           } else if (payload.eventType === 'DELETE') {
-            setReviews(prev => prev.filter(r => r.id !== (payload.old as any).id));
+            queryClient.setQueryData<Review[]>(['reviews'], (old = []) =>
+              old.filter(r => r.id !== (payload.old as any).id)
+            );
           }
         }
       )
@@ -65,7 +73,7 @@ export function ReviewsPage() {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, []);
+  }, [queryClient]);
 
   const toggleRow = (id: string) => {
     const newExpanded = new Set(expandedRows);
@@ -111,11 +119,47 @@ export function ReviewsPage() {
 
   const handleFilterChange = () => setCurrentPage(1);
 
-  if (loading) {
+  if (isLoading) {
     return (
-      <div className="flex items-center justify-center py-24">
-        <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-indigo-600 mr-3" />
-        <p className="text-gray-600 dark:text-gray-400">Loading reviews...</p>
+      <div className="space-y-6">
+        {/* Header */}
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-semibold text-gray-900 dark:text-white">Reviews</h1>
+            <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Detailed feedback analysis with AI-powered insights</p>
+          </div>
+          <Button
+            onClick={() => setIsUploadOpen(true)}
+            className="bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-600"
+          >
+            + Upload More
+          </Button>
+        </div>
+
+        {/* Filter Bar */}
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-5 animate-pulse">
+          <div className="h-12 w-full bg-gray-100 dark:bg-gray-700 rounded-lg"></div>
+        </div>
+
+        {/* Table skeleton */}
+        <TableSkeleton />
+      </div>
+    );
+  }
+
+  if (isError) {
+    return (
+      <div className="flex flex-col items-center justify-center py-24 space-y-4">
+        <div className="w-16 h-16 bg-red-50 dark:bg-red-900/30 rounded-2xl flex items-center justify-center">
+          <AlertCircle className="w-8 h-8 text-red-500" />
+        </div>
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Failed to load reviews</h3>
+        <p className="text-sm text-gray-500 dark:text-gray-400 text-center max-w-sm">
+          We encountered an error loading your customer reviews list. Please verify your connection or try again.
+        </p>
+        <Button onClick={() => refetch()} className="bg-indigo-600 hover:bg-indigo-700">
+          Retry Fetch
+        </Button>
       </div>
     );
   }
@@ -145,7 +189,7 @@ export function ReviewsPage() {
         <UploadReviewsModal
           isOpen={isUploadOpen}
           onClose={() => setIsUploadOpen(false)}
-          onUploadSuccess={loadReviews}
+          onUploadSuccess={handleUploadSuccess}
         />
       </div>
     );

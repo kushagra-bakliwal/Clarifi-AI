@@ -15,23 +15,19 @@ import { UploadReviewsModal } from '@/app/components/UploadReviewsModal';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/app/components/ui/tooltip';
 import { fetchKPIs, type KPIs } from '@/app/services/dataService';
 import { supabase } from '@/app/services/supabaseClient';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { DashboardSkeleton } from '@/app/components/skeletons/DashboardSkeleton';
 
 export function DashboardPage() {
-  // Bug Fix #2: Added missing useState, useEffect imports (now at top of file)
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
-  const [kpis, setKpis] = useState<KPIs | null>(null);
-  const [loading, setLoading] = useState(true);
+  const queryClient = useQueryClient();
 
-  const loadData = async () => {
-    setLoading(true);
-    const data = await fetchKPIs();
-    setKpis(data);
-    setLoading(false);
-  };
+  const { data: kpis = null, isLoading, isError, refetch } = useQuery<KPIs | null>({
+    queryKey: ['kpis'],
+    queryFn: fetchKPIs,
+  });
 
   useEffect(() => {
-    loadData();
-
     // Subscribe to KPI cache updates via Supabase Realtime
     const channel = supabase
       .channel('dashboard-kpi-changes')
@@ -41,8 +37,8 @@ export function DashboardPage() {
         (payload) => {
           if (payload.eventType === 'UPDATE' || payload.eventType === 'INSERT') {
             // kpi_cache.data holds the full KPIs object
-            setKpis((payload.new as any).data as KPIs);
-            setLoading(false);
+            const newKpiData = (payload.new as any).data as KPIs;
+            queryClient.setQueryData(['kpis'], newKpiData);
           }
         }
       )
@@ -51,15 +47,35 @@ export function DashboardPage() {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, []);
+  }, [queryClient]);
 
   const handleUploadSuccess = () => {
-    // Don't immediately reload — Realtime will push the update when analysis completes
-    // Just show a quick refresh after a short delay in case Realtime doesn't fire
-    setTimeout(loadData, 5000);
+    // Invalidate queries to trigger a fresh background refresh
+    queryClient.invalidateQueries();
   };
 
-  const noData = !loading && !kpis;
+  if (isLoading) {
+    return <DashboardSkeleton />;
+  }
+
+  if (isError) {
+    return (
+      <div className="flex flex-col items-center justify-center py-24 space-y-4">
+        <div className="w-16 h-16 bg-red-50 dark:bg-red-900/30 rounded-2xl flex items-center justify-center">
+          <AlertCircle className="w-8 h-8 text-red-500" />
+        </div>
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Failed to load dashboard data</h3>
+        <p className="text-sm text-gray-500 dark:text-gray-400 text-center max-w-sm">
+          We encountered an error loading your project metrics. Please verify your connection or try again.
+        </p>
+        <Button onClick={() => refetch()} className="bg-indigo-600 hover:bg-indigo-700">
+          Retry Fetch
+        </Button>
+      </div>
+    );
+  }
+
+  const noData = !kpis;
 
   return (
     <>

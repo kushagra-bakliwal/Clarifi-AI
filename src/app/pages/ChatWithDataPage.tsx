@@ -3,6 +3,7 @@ import { Send, Bot, User, Sparkles } from 'lucide-react';
 import { Button } from '@/app/components/ui/button';
 import { Input } from '@/app/components/ui/input';
 import { chatWithData } from '@/app/services/dataService';
+import { useMutation } from '@tanstack/react-query';
 
 interface Message {
   id: string;
@@ -32,9 +33,33 @@ const suggestionPrompts = [
 export function ChatWithDataPage() {
   const [messages, setMessages] = useState<Message[]>(sampleMessages);
   const [input, setInput] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
 
-  const handleSend = async () => {
+  const mutation = useMutation({
+    mutationFn: chatWithData,
+    onSuccess: (aiResponseContent) => {
+      const aiResponse: Message = {
+        id: (Date.now() + 1).toString(),
+        type: 'ai',
+        content: aiResponseContent,
+        timestamp: new Date()
+      };
+      setMessages(prev => [...prev, aiResponse]);
+    },
+    onError: (error) => {
+      console.error('Chat error:', error);
+      const errorResponse: Message = {
+        id: (Date.now() + 1).toString(),
+        type: 'ai',
+        content: 'Sorry, I encountered an error processing your request. Please try again.',
+        timestamp: new Date()
+      };
+      setMessages(prev => [...prev, errorResponse]);
+    }
+  });
+
+  const isLoading = mutation.isPending;
+
+  const handleSend = () => {
     if (!input.trim() || isLoading) return;
 
     const userMessage: Message = {
@@ -45,35 +70,9 @@ export function ChatWithDataPage() {
     };
 
     setMessages(prev => [...prev, userMessage]);
+    const prompt = input;
     setInput('');
-    setIsLoading(true);
-
-    try {
-      // Call the backend chat endpoint
-      const aiResponseContent = await chatWithData(input);
-      
-      const aiResponse: Message = {
-        id: (Date.now() + 1).toString(),
-        type: 'ai',
-        content: aiResponseContent,
-        timestamp: new Date()
-      };
-
-      setMessages(prev => [...prev, aiResponse]);
-    } catch (error) {
-      console.error('Chat error:', error);
-      
-      const errorResponse: Message = {
-        id: (Date.now() + 1).toString(),
-        type: 'ai',
-        content: 'Sorry, I encountered an error processing your request. Please try again.',
-        timestamp: new Date()
-      };
-      
-      setMessages(prev => [...prev, errorResponse]);
-    } finally {
-      setIsLoading(false);
-    }
+    mutation.mutate(prompt);
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {

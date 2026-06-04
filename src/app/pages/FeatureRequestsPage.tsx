@@ -1,9 +1,11 @@
-import { useState, useEffect } from 'react';
-import { TrendingUp, Users, Upload } from 'lucide-react';
+import { useState } from 'react';
+import { TrendingUp, Users, Upload, AlertCircle } from 'lucide-react';
 import { Badge } from '@/app/components/ui/badge';
 import { Button } from '@/app/components/ui/button';
 import { fetchFeatureRequests, type FeatureRequest } from '@/app/services/dataService';
 import { UploadReviewsModal } from '@/app/components/UploadReviewsModal';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { CardListSkeleton } from '@/app/components/skeletons/CardListSkeleton';
 
 const STATUS_COLORS: Record<string, string> = {
   'Under Review':   'bg-blue-100 text-blue-700 border-blue-200 dark:bg-blue-900/30 dark:text-blue-400 dark:border-blue-700',
@@ -14,21 +16,20 @@ const STATUS_COLORS: Record<string, string> = {
 };
 
 export function FeatureRequestsPage() {
-  const [requests, setRequests] = useState<FeatureRequest[]>([]);
-  const [loading, setLoading] = useState(true);
+  const queryClient = useQueryClient();
   const [isUploadOpen, setIsUploadOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedStatus, setSelectedStatus] = useState('all');
 
-  const loadData = async () => {
-    setLoading(true);
-    const data = await fetchFeatureRequests();
-    // Sort by votes descending
-    setRequests(data.sort((a, b) => b.votes - a.votes));
-    setLoading(false);
-  };
+  const { data: requests = [], isLoading, isError, refetch } = useQuery<FeatureRequest[]>({
+    queryKey: ['feature-requests'],
+    queryFn: fetchFeatureRequests,
+    select: (data) => [...data].sort((a, b) => b.votes - a.votes),
+  });
 
-  useEffect(() => { loadData(); }, []);
+  const handleUploadSuccess = () => {
+    queryClient.invalidateQueries();
+  };
 
   const filtered = requests.filter(r => {
     if (selectedStatus !== 'all' && r.status !== selectedStatus) return false;
@@ -42,11 +43,31 @@ export function FeatureRequestsPage() {
   const totalMentions = requests.length;
   const topRequest = requests[0];
 
-  if (loading) {
+  if (isLoading) {
     return (
-      <div className="flex items-center justify-center py-24">
-        <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-indigo-600 mr-3" />
-        <p className="text-gray-600 dark:text-gray-400">Loading feature requests...</p>
+      <div className="space-y-6">
+        <div>
+          <h1 className="text-2xl font-semibold text-gray-900 dark:text-white">Feature Requests</h1>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">AI-extracted feature backlog from customer feedback</p>
+        </div>
+        <CardListSkeleton />
+      </div>
+    );
+  }
+
+  if (isError) {
+    return (
+      <div className="flex flex-col items-center justify-center py-24 space-y-4">
+        <div className="w-16 h-16 bg-red-50 dark:bg-red-900/30 rounded-2xl flex items-center justify-center">
+          <AlertCircle className="w-8 h-8 text-red-500" />
+        </div>
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Failed to load feature requests</h3>
+        <p className="text-sm text-gray-500 dark:text-gray-400 text-center max-w-sm">
+          We encountered an error loading the feature requests backlog. Please verify your connection or try again.
+        </p>
+        <Button onClick={() => refetch()} className="bg-indigo-600 hover:bg-indigo-700">
+          Retry Fetch
+        </Button>
       </div>
     );
   }
@@ -70,7 +91,7 @@ export function FeatureRequestsPage() {
             Upload Reviews CSV
           </Button>
         </div>
-        <UploadReviewsModal isOpen={isUploadOpen} onClose={() => setIsUploadOpen(false)} onUploadSuccess={loadData} />
+        <UploadReviewsModal isOpen={isUploadOpen} onClose={() => setIsUploadOpen(false)} onUploadSuccess={handleUploadSuccess} />
       </div>
     );
   }

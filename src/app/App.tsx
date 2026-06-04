@@ -1,15 +1,10 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, lazy, Suspense } from 'react';
 import { supabase } from '@/app/services/supabaseClient';
 import { Sidebar } from '@/app/components/Sidebar';
 import { Header } from '@/app/components/Header';
 import { FloatingChatButton } from '@/app/components/FloatingChatButton';
 import { HelpGuide } from '@/app/components/HelpGuide';
-import { DashboardPage } from '@/app/pages/DashboardPage';
-import { ReviewsPage } from '@/app/pages/ReviewsPage';
-import { FeatureRequestsPage } from '@/app/pages/FeatureRequestsPage';
-import { AIRecommendationsPage } from '@/app/pages/AIRecommendationsPage';
 import { ReportsPage } from '@/app/pages/ReportsPage';
-import { ChatWithDataPage } from '@/app/pages/ChatWithDataPage';
 import { ProfilePage } from '@/app/pages/ProfilePage';
 import { ConnectorsPage } from '@/app/pages/ConnectorsPage';
 import { LoginPage } from '@/app/pages/LoginPage';
@@ -19,6 +14,12 @@ import { fetchProfile, updateProfile } from '@/app/services/dataService';
 import { SentryErrorBoundary, setSentryUser } from '@/app/services/sentry';
 import { identifyUser as identifyPostHogUser } from '@/app/services/posthog';
 import { Analytics } from '@vercel/analytics/react';
+
+const DashboardPage = lazy(() => import('@/app/pages/DashboardPage').then(m => ({ default: m.DashboardPage })));
+const ReviewsPage = lazy(() => import('@/app/pages/ReviewsPage').then(m => ({ default: m.ReviewsPage })));
+const FeatureRequestsPage = lazy(() => import('@/app/pages/FeatureRequestsPage').then(m => ({ default: m.FeatureRequestsPage })));
+const AIRecommendationsPage = lazy(() => import('@/app/pages/AIRecommendationsPage').then(m => ({ default: m.AIRecommendationsPage })));
+const ChatWithDataPage = lazy(() => import('@/app/pages/ChatWithDataPage').then(m => ({ default: m.ChatWithDataPage })));
 
 type AuthState = 'loading' | 'unauthenticated' | 'onboarding' | 'authenticated';
 
@@ -189,7 +190,9 @@ export default function App() {
           <Header onNavigate={setCurrentPage} onSignOut={handleSignOut} />
 
           <main className="lg:ml-64 md:ml-20 sm:ml-20 ml-0 mt-16 p-4 sm:p-6 lg:p-8">
-            {renderPage()}
+            <Suspense fallback={<div className="flex items-center justify-center h-full w-full"><div className="animate-pulse text-muted-foreground text-sm">Loading...</div></div>}>
+              {renderPage()}
+            </Suspense>
           </main>
 
           <FloatingChatButton />

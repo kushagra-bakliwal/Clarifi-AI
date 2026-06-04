@@ -5,6 +5,7 @@ import {
 } from 'lucide-react';
 import { Button } from '@/app/components/ui/button';
 import { supabase } from '@/app/services/supabaseClient';
+import { useQueryClient } from '@tanstack/react-query';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
 
@@ -49,6 +50,7 @@ function makeLog(message: string, type: LogEntry['type'] = 'info'): LogEntry {
 // ─── Component ────────────────────────────────────────────────────────────────
 
 export function UploadReviewsModal({ isOpen, onClose, onUploadSuccess }: UploadReviewsModalProps) {
+  const queryClient = useQueryClient();
   const [isDragging, setIsDragging] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [phase, setPhase] = useState<Phase>('idle');
@@ -151,6 +153,7 @@ export function UploadReviewsModal({ isOpen, onClose, onUploadSuccess }: UploadR
             setPhase('done');
             supabase.removeChannel(channel);
             channelRef.current = null;
+            queryClient.invalidateQueries();
             onUploadSuccess?.();
           }
         }
@@ -218,8 +221,14 @@ export function UploadReviewsModal({ isOpen, onClose, onUploadSuccess }: UploadR
 
       // Safety fallback: if Realtime never fires (e.g. RLS blocks it), poll after 2 min
       setTimeout(() => {
-        setPhase(p => p === 'processing' ? 'done' : p);
-        onUploadSuccess?.();
+        setPhase(p => {
+          if (p === 'processing') {
+            queryClient.invalidateQueries();
+            onUploadSuccess?.();
+            return 'done';
+          }
+          return p;
+        });
       }, 120_000);
 
     } catch (err: any) {
