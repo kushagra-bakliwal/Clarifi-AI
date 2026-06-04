@@ -18,6 +18,7 @@ import { ThemeProvider } from '@/app/contexts/ThemeContext';
 import { fetchProfile, updateProfile } from '@/app/services/dataService';
 import { SentryErrorBoundary, setSentryUser } from '@/app/services/sentry';
 import { identifyUser as identifyPostHogUser } from '@/app/services/posthog';
+import { Analytics } from '@vercel/analytics/react';
 
 type AuthState = 'loading' | 'unauthenticated' | 'onboarding' | 'authenticated';
 
@@ -117,9 +118,12 @@ export default function App() {
 
   if (authState === 'loading') {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-900">
-        <div className="w-12 h-12 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin"></div>
-      </div>
+      <>
+        <div className="min-h-screen flex items-center justify-center bg-gray-900">
+          <div className="w-12 h-12 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin"></div>
+        </div>
+        <Analytics />
+      </>
     );
   }
 
@@ -127,6 +131,7 @@ export default function App() {
     return (
       <ThemeProvider>
         <LoginPage onLogin={handleLogin} />
+        <Analytics />
       </ThemeProvider>
     );
   }
@@ -135,6 +140,7 @@ export default function App() {
     return (
       <ThemeProvider>
         <OnboardingPage onComplete={handleOnboardingComplete} />
+        <Analytics />
       </ThemeProvider>
     );
   }
@@ -189,6 +195,7 @@ export default function App() {
           <FloatingChatButton />
           <HelpGuide />
         </div>
+        <Analytics />
       </ThemeProvider>
     </SentryErrorBoundary>
   );
