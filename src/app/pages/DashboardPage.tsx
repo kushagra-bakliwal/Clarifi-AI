@@ -134,7 +134,7 @@ export function DashboardPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           <MetricCard
             title="Total Reviews"
-            value={loading ? '...' : kpis?.totalReviews?.toLocaleString() ?? '0'}
+            value={isLoading ? '...' : kpis?.totalReviews?.toLocaleString() ?? '0'}
             trend={{
               value: kpis ? `${kpis.positiveReviews} positive` : 'No data yet',
               isPositive: true,
@@ -143,7 +143,7 @@ export function DashboardPage() {
           />
           <MetricCard
             title="Average Rating"
-            value={loading ? '...' : kpis ? `${kpis.avgRating}★` : '—'}
+            value={isLoading ? '...' : kpis ? `${kpis.avgRating}★` : '—'}
             trend={{
               value: kpis ? `${(parseFloat(kpis.avgSentiment) * 10).toFixed(1)}/10 sentiment` : 'No data yet',
               isPositive: kpis ? parseFloat(kpis.avgSentiment) > 0.5 : true,
@@ -152,7 +152,7 @@ export function DashboardPage() {
           />
           <MetricCard
             title="Feature Requests"
-            value={loading ? '...' : String(kpis?.featureRequests ?? '0')}
+            value={isLoading ? '...' : String(kpis?.featureRequests ?? '0')}
             trend={{
               value: kpis ? 'From customer reviews' : 'No data yet',
               isPositive: true,
@@ -161,7 +161,7 @@ export function DashboardPage() {
           />
           <MetricCard
             title="Critical Issues"
-            value={loading ? '...' : String(kpis?.criticalIssues ?? '0')}
+            value={isLoading ? '...' : String(kpis?.criticalIssues ?? '0')}
             trend={{
               value: kpis ? (kpis.criticalIssues > 0 ? 'Need immediate attention' : 'No critical issues') : 'No data yet',
               isPositive: kpis ? kpis.criticalIssues === 0 : true,
