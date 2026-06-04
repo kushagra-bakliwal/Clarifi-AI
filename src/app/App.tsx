@@ -129,19 +129,23 @@ export default function App() {
 
   if (authState === 'unauthenticated') {
     return (
-      <ThemeProvider>
-        <LoginPage onLogin={handleLogin} />
+      <>
+        <ThemeProvider>
+          <LoginPage onLogin={handleLogin} />
+        </ThemeProvider>
         <Analytics />
-      </ThemeProvider>
+      </>
     );
   }
 
   if (authState === 'onboarding') {
     return (
-      <ThemeProvider>
-        <OnboardingPage onComplete={handleOnboardingComplete} />
+      <>
+        <ThemeProvider>
+          <OnboardingPage onComplete={handleOnboardingComplete} />
+        </ThemeProvider>
         <Analytics />
-      </ThemeProvider>
+      </>
     );
   }
 
@@ -162,41 +166,43 @@ export default function App() {
   };
 
   return (
-    <SentryErrorBoundary
-      fallback={({ error }) => (
-        <div className="min-h-screen flex items-center justify-center bg-gray-900 text-white">
-          <div className="text-center max-w-md p-8">
-            <h1 className="text-2xl font-bold mb-4">Something went wrong</h1>
-            <p className="text-gray-400 mb-6">
-              An unexpected error occurred. Our team has been notified.
-            </p>
-            <pre className="text-xs text-red-400 bg-gray-800 p-4 rounded-lg mb-6 overflow-auto max-h-32">
-              {error?.toString()}
-            </pre>
-            <button
-              onClick={() => window.location.reload()}
-              className="px-6 py-2 bg-indigo-600 hover:bg-indigo-700 rounded-lg font-medium transition-colors"
-            >
-              Reload Page
-            </button>
+    <>
+      <SentryErrorBoundary
+        fallback={({ error }) => (
+          <div className="min-h-screen flex items-center justify-center bg-gray-900 text-white">
+            <div className="text-center max-w-md p-8">
+              <h1 className="text-2xl font-bold mb-4">Something went wrong</h1>
+              <p className="text-gray-400 mb-6">
+                An unexpected error occurred. Our team has been notified.
+              </p>
+              <pre className="text-xs text-red-400 bg-gray-800 p-4 rounded-lg mb-6 overflow-auto max-h-32">
+                {error?.toString()}
+              </pre>
+              <button
+                onClick={() => window.location.reload()}
+                className="px-6 py-2 bg-indigo-600 hover:bg-indigo-700 rounded-lg font-medium transition-colors"
+              >
+                Reload Page
+              </button>
+            </div>
           </div>
-        </div>
-      )}
-    >
-      <ThemeProvider>
-        <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors">
-          <Sidebar currentPage={currentPage} onNavigate={setCurrentPage} />
-          <Header onNavigate={setCurrentPage} onSignOut={handleSignOut} />
+        )}
+      >
+        <ThemeProvider>
+          <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors">
+            <Sidebar currentPage={currentPage} onNavigate={setCurrentPage} />
+            <Header onNavigate={setCurrentPage} onSignOut={handleSignOut} />
 
-          <main className="lg:ml-64 md:ml-20 sm:ml-20 ml-0 mt-16 p-4 sm:p-6 lg:p-8">
-            {renderPage()}
-          </main>
+            <main className="lg:ml-64 md:ml-20 sm:ml-20 ml-0 mt-16 p-4 sm:p-6 lg:p-8">
+              {renderPage()}
+            </main>
 
-          <FloatingChatButton />
-          <HelpGuide />
-        </div>
-        <Analytics />
-      </ThemeProvider>
-    </SentryErrorBoundary>
+            <FloatingChatButton />
+            <HelpGuide />
+          </div>
+        </ThemeProvider>
+      </SentryErrorBoundary>
+      <Analytics />
+    </>
   );
 }
