@@ -8,7 +8,7 @@
 
 **The enterprise feedback intelligence platform that transforms unstructured customer voice into revenue-driving product strategy.**
 
-[![Live Demo](https://img.shields.io/badge/Live%20Demo-clarifi--ai.vercel.app-black?style=for-the-badge)]((https://clarifiai.vercel.app/))
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-clarifiai.vercel.app-black?style=for-the-badge)](https://clarifiai.vercel.app/)
 [![GitHub Stars](https://img.shields.io/github/stars/kushagra-bakliwal/Clarifi-AI?style=for-the-badge)](https://github.com/kushagra-bakliwal/Clarifi-AI/stargazers)
 [![License](https://img.shields.io/badge/License-MIT-blue?style=for-the-badge)](./LICENSE)
 [![Build](https://img.shields.io/badge/Build-Passing-brightgreen?style=for-the-badge)](#)
@@ -42,7 +42,7 @@ Product managers miss critical issues. Engineering teams fix the wrong things. C
 
 | | |
 |---|---|
-| **Production URL** | [clarifi-ai.vercel.app](https://clarifiai.vercel.app/) |
+| **Production URL** | [clarifiai.vercel.app](https://clarifiai.vercel.app/) |
 | **Demo Account** | `demo@clarifi.ai` / `demo1234` |
 | **Sample Dataset** | Included in repo under `/data/sample-reviews.csv` |
 
@@ -364,6 +364,6 @@ MIT License — see [LICENSE](./LICENSE) for details.
 
 **Built with precision. Designed for product teams that move fast.**
 
-[Live Demo](https://clarifi-ai.vercel.app) · [Report a Bug](https://github.com/kushagra-bakliwal/Clarifi-AI/issues) · [Request a Feature](https://github.com/kushagra-bakliwal/Clarifi-AI/issues)
+[Live Demo](https://clarifiai.vercel.app/) · [Report a Bug](https://github.com/kushagra-bakliwal/Clarifi-AI/issues) · [Request a Feature](https://github.com/kushagra-bakliwal/Clarifi-AI/issues)
 
 </div>
