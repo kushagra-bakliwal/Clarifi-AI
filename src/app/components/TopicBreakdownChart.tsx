@@ -28,33 +28,39 @@ export function TopicBreakdownChart({ breakdown }: TopicBreakdownChartProps) {
       ) : (
         <ResponsiveContainer width="100%" height={300}>
           <BarChart data={breakdown} layout="vertical">
-            <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+            <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" opacity={0.6} />
             <XAxis
               type="number"
-              tick={{ fill: '#6b7280', fontSize: 12 }}
-              tickLine={{ stroke: '#e5e7eb' }}
+              tick={{ fill: 'currentColor', fontSize: 12 }}
+              className="text-muted-foreground"
+              tickLine={{ stroke: 'var(--border)' }}
             />
             <YAxis
               type="category"
               dataKey="topic"
-              tick={{ fill: '#6b7280', fontSize: 12 }}
-              tickLine={{ stroke: '#e5e7eb' }}
+              tick={{ fill: 'currentColor', fontSize: 12 }}
+              className="text-muted-foreground"
+              tickLine={{ stroke: 'var(--border)' }}
               width={130}
             />
             <Tooltip
               contentStyle={{
-                backgroundColor: 'white',
-                border: '1px solid #e5e7eb',
-                borderRadius: '8px',
-                boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)',
+                backgroundColor: 'var(--card)',
+                borderColor: 'var(--border)',
+                color: 'var(--card-foreground)',
+                borderRadius: 'var(--radius)',
+                boxShadow: '0 4px 12px -2px rgb(0 0 0 / 0.15)',
               }}
-              cursor={{ fill: '#f9fafb' }}
+              cursor={{ fill: 'var(--muted)', opacity: 0.2 }}
               formatter={(value: any) => [`${value} reviews`, 'Count']}
             />
             <Bar dataKey="count" radius={[0, 8, 8, 0]}>
-              {breakdown!.map((entry, index) => (
-                <Cell key={`cell-${entry.topic}-${index}`} fill={entry.color} />
-              ))}
+              {breakdown!.map((entry, index) => {
+                const emeraldPalette = ['var(--chart-1)', 'var(--chart-2)', 'var(--chart-3)', 'var(--chart-4)', 'var(--chart-5)'];
+                return (
+                  <Cell key={`cell-${entry.topic}-${index}`} fill={emeraldPalette[index % emeraldPalette.length]} />
+                );
+              })}
             </Bar>
           </BarChart>
         </ResponsiveContainer>

@@ -12,9 +12,9 @@ export function SentimentDistributionChart({ kpis }: SentimentDistributionChartP
   const neutralPercent = kpis ? Math.round(((kpis.neutralReviews ?? 0) / total) * 100) : 25;
 
   const data = [
-    { name: 'Positive', value: positivePercent, color: '#10b981' },
-    { name: 'Neutral', value: neutralPercent, color: '#f59e0b' },
-    { name: 'Negative', value: negativePercent, color: '#ef4444' },
+    { name: 'Positive', value: positivePercent, color: 'var(--chart-1)' },
+    { name: 'Neutral', value: neutralPercent, color: 'var(--chart-3)' },
+    { name: 'Negative', value: negativePercent, color: 'var(--destructive)' },
   ];
 
   return (
@@ -42,10 +42,11 @@ export function SentimentDistributionChart({ kpis }: SentimentDistributionChartP
           <Tooltip
             key="tooltip"
             contentStyle={{
-              backgroundColor: 'white',
-              border: '1px solid #e5e7eb',
-              borderRadius: '8px',
-              boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)'
+              backgroundColor: 'var(--card)',
+              borderColor: 'var(--border)',
+              color: 'var(--card-foreground)',
+              borderRadius: 'var(--radius)',
+              boxShadow: '0 4px 12px -2px rgb(0 0 0 / 0.15)'
             }}
             formatter={(value: number) => `${value}%`}
           />
@@ -54,7 +55,7 @@ export function SentimentDistributionChart({ kpis }: SentimentDistributionChartP
             verticalAlign="bottom"
             height={36}
             iconType="circle"
-            formatter={(value) => <span className="text-sm text-gray-700 dark:text-gray-300">{value}</span>}
+            formatter={(value) => <span className="text-sm text-foreground">{value}</span>}
           />
         </PieChart>
       </ResponsiveContainer>

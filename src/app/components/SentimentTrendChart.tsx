@@ -38,23 +38,26 @@ export function SentimentTrendChart({ trend }: SentimentTrendChartProps) {
       ) : (
         <ResponsiveContainer width="100%" height={300}>
           <LineChart data={chartData}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" className="dark:stroke-gray-700" />
+            <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" opacity={0.6} />
             <XAxis
               dataKey="date"
-              tick={{ fill: '#6b7280', fontSize: 12 }}
-              tickLine={{ stroke: '#e5e7eb' }}
+              tick={{ fill: 'currentColor', fontSize: 12 }}
+              className="text-muted-foreground"
+              tickLine={{ stroke: 'var(--border)' }}
             />
             <YAxis
               domain={[0, 10]}
-              tick={{ fill: '#6b7280', fontSize: 12 }}
-              tickLine={{ stroke: '#e5e7eb' }}
+              tick={{ fill: 'currentColor', fontSize: 12 }}
+              className="text-muted-foreground"
+              tickLine={{ stroke: 'var(--border)' }}
             />
             <Tooltip
               contentStyle={{
-                backgroundColor: 'white',
-                border: '1px solid #e5e7eb',
-                borderRadius: '8px',
-                boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)',
+                backgroundColor: 'var(--card)',
+                borderColor: 'var(--border)',
+                color: 'var(--card-foreground)',
+                borderRadius: 'var(--radius)',
+                boxShadow: '0 4px 12px -2px rgb(0 0 0 / 0.15)',
               }}
               formatter={(value: any, name: string) =>
                 name === 'Sentiment'
@@ -62,14 +65,14 @@ export function SentimentTrendChart({ trend }: SentimentTrendChartProps) {
                   : [value, name]
               }
             />
-            <Legend />
+            <Legend wrapperStyle={{ color: 'var(--foreground)' }} />
             <Line
               type="monotone"
               dataKey="Sentiment"
-              stroke="#6366f1"
+              stroke="var(--chart-1)"
               strokeWidth={3}
-              dot={{ fill: '#6366f1', r: 4 }}
-              activeDot={{ r: 6 }}
+              dot={{ fill: 'var(--chart-1)', r: 4 }}
+              activeDot={{ r: 6, fill: 'var(--chart-2)' }}
             />
           </LineChart>
         </ResponsiveContainer>
