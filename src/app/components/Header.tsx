@@ -14,12 +14,12 @@ export function Header({ onNavigate, onSignOut }: HeaderProps) {
   const { theme, toggleTheme } = useTheme();
 
   return (
-    <div className="h-16 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 fixed top-0 lg:left-64 md:left-20 sm:left-20 left-0 right-0 z-10 flex items-center justify-between px-4 sm:px-6 lg:px-8">
+    <div className="h-16 bg-background/95 backdrop-blur-sm border-b border-border fixed top-0 lg:left-64 md:left-20 sm:left-20 left-0 right-0 z-10 flex items-center justify-between px-4 sm:px-6 lg:px-8">
       <div className="flex items-center gap-2 sm:gap-4">
         <div className="hidden sm:flex items-center gap-2">
-          <Calendar className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+          <Calendar className="w-4 h-4 text-muted-foreground" />
           <Select defaultValue="30">
-            <SelectTrigger className="w-[140px] sm:w-[180px] border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white">
+            <SelectTrigger className="w-[140px] sm:w-[180px]">
               <SelectValue placeholder="Select date range" />
             </SelectTrigger>
             <SelectContent>
@@ -32,9 +32,9 @@ export function Header({ onNavigate, onSignOut }: HeaderProps) {
         </div>
         
         <div className="flex items-center gap-2">
-          <Filter className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+          <Filter className="w-4 h-4 text-muted-foreground" />
           <Select defaultValue="all-sentiment">
-            <SelectTrigger className="w-[140px] border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white">
+            <SelectTrigger className="w-[140px]">
               <SelectValue placeholder="Sentiment" />
             </SelectTrigger>
             <SelectContent>
@@ -48,7 +48,7 @@ export function Header({ onNavigate, onSignOut }: HeaderProps) {
         
         <div className="flex items-center gap-2">
           <Select defaultValue="all-topics">
-            <SelectTrigger className="w-[140px] border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white">
+            <SelectTrigger className="w-[140px]">
               <SelectValue placeholder="Topic" />
             </SelectTrigger>
             <SelectContent>
@@ -63,7 +63,7 @@ export function Header({ onNavigate, onSignOut }: HeaderProps) {
       </div>
       
       <div className="flex items-center gap-3">
-        <Button variant="outline" size="sm" className="text-sm dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700">
+        <Button variant="outline" size="sm" className="text-sm">
           Export Report
         </Button>
         
@@ -72,7 +72,7 @@ export function Header({ onNavigate, onSignOut }: HeaderProps) {
           variant="outline"
           size="sm"
           onClick={toggleTheme}
-          className="p-2 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700"
+          className="p-2"
           title={theme === 'light' ? 'Switch to Dark Mode' : 'Switch to Light Mode'}
         >
           {theme === 'light' ? (

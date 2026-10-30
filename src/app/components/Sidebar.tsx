@@ -18,13 +18,13 @@ const navItems = [
 
 export function Sidebar({ currentPage, onNavigate }: SidebarProps) {
   return (
-    <div className="w-64 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 h-screen fixed left-0 top-0 flex flex-col lg:w-64 md:w-20 sm:w-20">
-      <div className="p-6 border-b border-gray-200 dark:border-gray-700">
+    <div className="w-64 bg-sidebar text-sidebar-foreground border-r border-sidebar-border h-screen fixed left-0 top-0 flex flex-col lg:w-64 md:w-20 sm:w-20">
+      <div className="p-6 border-b border-sidebar-border">
         <div className="flex items-center gap-3">
           <img src={clarifiLogo} alt="Clarifi AI" className="w-10 h-10 object-contain flex-shrink-0" />
           <div className="lg:block md:hidden sm:hidden">
-            <h1 className="text-xl font-semibold text-gray-900 dark:text-white">Clarifi AI</h1>
-            <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Feedback Intelligence</p>
+            <h1 className="text-xl font-semibold text-sidebar-foreground">Clarifi AI</h1>
+            <p className="text-xs text-muted-foreground mt-0.5">Feedback Intelligence</p>
           </div>
         </div>
       </div>
@@ -39,8 +39,8 @@ export function Sidebar({ currentPage, onNavigate }: SidebarProps) {
               onClick={() => onNavigate(item.page)}
               className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg mb-1 transition-colors ${
                 isActive
-                  ? 'bg-indigo-50 dark:bg-indigo-900/50 text-indigo-600 dark:text-indigo-400'
-                  : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'
+                  ? 'bg-sidebar-accent text-sidebar-accent-foreground font-medium shadow-xs'
+                  : 'text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-accent-foreground'
               }`}
               title={item.label}
             >

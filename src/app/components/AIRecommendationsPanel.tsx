@@ -75,12 +75,12 @@ export function AIRecommendationsPanel() {
 
   if (recommendations.length === 0) {
     return (
-      <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-200 dark:border-gray-700">
+      <div className="bg-card text-card-foreground rounded-xl p-6 shadow-xs border border-border">
         <div className="mb-4">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white">AI Recommendations</h3>
-          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Intelligent insights powered by AI</p>
+          <h3 className="text-lg font-semibold text-card-foreground">AI Recommendations</h3>
+          <p className="text-sm text-muted-foreground mt-1">Intelligent insights powered by AI</p>
         </div>
-        <div className="text-center py-8 text-gray-600 dark:text-gray-400">
+        <div className="text-center py-8 text-muted-foreground">
           <p>Upload reviews to get AI-powered recommendations</p>
         </div>
       </div>
@@ -89,10 +89,10 @@ export function AIRecommendationsPanel() {
 
   return (
     <>
-      <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-200 dark:border-gray-700">
+      <div className="bg-card text-card-foreground rounded-xl p-6 shadow-xs border border-border">
         <div className="mb-4">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white">AI Recommendations</h3>
-          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Intelligent insights powered by AI</p>
+          <h3 className="text-lg font-semibold text-card-foreground">AI Recommendations</h3>
+          <p className="text-sm text-muted-foreground mt-1">Intelligent insights powered by AI</p>
         </div>
         
         <div className="space-y-4">

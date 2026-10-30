@@ -59,35 +59,35 @@ export function ReviewInsightsTable() {
 
   if (reviews.length === 0) {
     return (
-      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-8">
+      <div className="bg-card text-card-foreground rounded-xl shadow-xs border border-border p-8">
         <div className="text-center">
-          <p className="text-gray-600 dark:text-gray-400">No reviews uploaded yet.</p>
-          <p className="text-sm text-gray-500 dark:text-gray-500 mt-2">Upload a CSV file to see AI-powered insights.</p>
+          <p className="text-muted-foreground">No reviews uploaded yet.</p>
+          <p className="text-sm text-muted-foreground mt-2">Upload a CSV file to see AI-powered insights.</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
-      <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-white">AI-Powered Review Insights</h3>
-        <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Smart summaries with urgency detection</p>
+    <div className="bg-card text-card-foreground rounded-xl shadow-xs border border-border overflow-hidden">
+      <div className="px-6 py-4 border-b border-border">
+        <h3 className="text-lg font-semibold text-card-foreground">AI-Powered Review Insights</h3>
+        <p className="text-sm text-muted-foreground mt-1">Smart summaries with urgency detection</p>
       </div>
       
       <div className="overflow-x-auto">
         <table className="w-full">
-          <thead className="bg-gray-50 dark:bg-gray-700/50 border-b border-gray-200 dark:border-gray-700">
+          <thead className="bg-muted/40 border-b border-border">
             <tr>
               <th className="w-8 px-4 py-3"></th>
-              <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">TL;DR Summary</th>
-              <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">Sentiment</th>
-              <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">Keywords</th>
-              <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">Priority</th>
-              <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">Source</th>
+              <th className="px-6 py-3 text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider">TL;DR Summary</th>
+              <th className="px-6 py-3 text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider">Sentiment</th>
+              <th className="px-6 py-3 text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider">Keywords</th>
+              <th className="px-6 py-3 text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider">Priority</th>
+              <th className="px-6 py-3 text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider">Source</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
+          <tbody className="divide-y divide-border">
             {reviews.slice(0, 10).map((review) => (
               <Fragment key={review.id}>
                 <tr 

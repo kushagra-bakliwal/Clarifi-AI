@@ -185,7 +185,7 @@ export default function App() {
       )}
     >
       <ThemeProvider>
-        <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors">
+        <div className="min-h-screen bg-background text-foreground transition-colors">
           <Sidebar currentPage={currentPage} onNavigate={setCurrentPage} />
           <Header onNavigate={setCurrentPage} onSignOut={handleSignOut} />
 

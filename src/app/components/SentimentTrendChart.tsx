@@ -19,10 +19,10 @@ export function SentimentTrendChart({ trend }: SentimentTrendChartProps) {
     : [];
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-200 dark:border-gray-700">
+    <div className="bg-card text-card-foreground rounded-xl p-6 shadow-xs border border-border">
       <div className="mb-6">
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Sentiment Trend Over Time</h3>
-        <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+        <h3 className="text-lg font-semibold text-card-foreground">Sentiment Trend Over Time</h3>
+        <p className="text-sm text-muted-foreground mt-1">
           {hasData ? 'Average sentiment score (0–10) grouped by month' : 'Upload reviews to see sentiment trends'}
         </p>
       </div>

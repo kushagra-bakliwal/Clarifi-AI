@@ -83,8 +83,8 @@ export function DashboardPage() {
         {/* Page Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Dashboard</h1>
-            <p className="text-gray-500 dark:text-gray-400 mt-1">
+            <h1 className="text-3xl font-bold tracking-tight text-foreground">Dashboard</h1>
+            <p className="text-muted-foreground mt-1">
               {kpis
                 ? `${kpis.totalReviews.toLocaleString()} reviews • ${kpis.completedReviews ?? kpis.totalReviews} analyzed • Last updated ${new Date(kpis.lastUpdated).toLocaleDateString()}`
                 : 'Overview of your customer feedback intelligence'}
@@ -97,7 +97,7 @@ export function DashboardPage() {
                 <Button
                   onClick={() => setIsUploadModalOpen(true)}
                   size="sm"
-                  className="bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-600 rounded-full w-10 h-10 p-0 shadow-lg hover:shadow-xl transition-all"
+                  className="rounded-full w-10 h-10 p-0 shadow-md transition-all"
                 >
                   <Plus className="w-5 h-5" />
                 </Button>
